@@ -11,6 +11,6 @@ uint8 error_status              # https://emanual.robotis.com/docs/kr/dxl/mx/mx-
 float64 present_position        # radians
 float64 present_velocity        # radians/s
 float64 present_acceleration    # radians/s^2
-float64 present_current         # A 
+float64 present_current         # mA 
 float64 present_voltage         # V
 float64 present_temperature     # C
