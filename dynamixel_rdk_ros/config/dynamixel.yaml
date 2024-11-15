@@ -1,19 +1,12 @@
 # ROS2 Parameters
 /**:
-    ros_parameters:
+    ros__parameters:
         device_port: "/dev/ttyUSB0"
-        baud_rate: 115200
-
-        dynamixel:
-            id: 0
-            type: "MX"
-            max_position_limit: M_PI
-            min_position_limit: -M_PI
-        
+        baud_rate: 1000000
         dynamixels:
-            ids: [0, 1, 2]
+            ids: [1, 2, 3]
             types: ["MX", "MX", "MX"]
-            max_position_limits: [M_PI, M_PI, M_PI]
-            min_position_limits: [-M_PI, -M_PI, -M_PI]
+            max_position_limits: [3.14159, 3.14159, 3.14159]
+            min_position_limits: [-3.14159, -3.14159, -3.14159]
     
 

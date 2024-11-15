@@ -39,6 +39,11 @@ install(DIRECTORY config
   DESTINATION share/${PROJECT_NAME}/
 )
 
+# Install launch files
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 # Install the executables
 install(TARGETS
   dynamixel_rdk_node
