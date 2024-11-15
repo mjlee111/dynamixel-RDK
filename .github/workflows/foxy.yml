@@ -17,4 +17,5 @@ jobs:
       - name: Building and testing on ROS2 Foxy
         uses: ichiro-its/ros2-ci@v1.0.0
         with:
+          apt-packages: ros-foxy-dynamixel-sdk
           ros2-distro: foxy
