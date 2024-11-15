@@ -9,7 +9,14 @@ Dynamixel ROS Development Kit for Sync Read and Write.
 </div>
 
 ## Overview
-This repository contains a ROS2 package for Dynamixel Sync Read and Write. Supports **Lifecycle Node** system.
+This repository contains a ROS2 package for Dynamixel Sync Read and Write based on [Dynamixel SDK](https://github.com/ROBOTIS-GIT/DynamixelSDK).
+
+## Features
+- Supports **Sync Read** and **Sync Write** for Dynamixel motors
+- Supports **Bulk Read** and **Bulk Write** for Dynamixel motors
+- Supports **Lifecycle Node** system
+- Supports **YAML** file for parameters
+- Status & Control messages support - [Dynamixel RDK Messages](dynamixel_rdk_msgs/README.md)
 
 ## Requirements
 To use the packages in this repository, make sure you have the following installed:
@@ -17,7 +24,7 @@ To use the packages in this repository, make sure you have the following install
 | Component | Version/Distribution | Notes |
 |-----------|----------------------|-------|
 | ROS2 |  Humble or higher | Recommended ROS2 distributions |
-| Dynamixel SDK | [Dynamixel SDK](https://github.com/ROBOTIS-GIT/DynamixelSDK) | Dynamixel SDK for controlling Dynamixel  |
+| Dynamixel SDK | [github](https://github.com/ROBOTIS-GIT/DynamixelSDK) | Dynamixel SDK for controlling Dynamixel  |
 
 ## Development Environment
 
@@ -50,12 +57,13 @@ To use the packages in this repository, make sure you have the following install
 ## Launching the node & Set Lifecycle Node
 
 1. **Launch the node** <br>
-    To run the `dynamixel_rdk_node`, use the provided [launch file](dynamixel_rdk_ros/launch/dynamixel_rdk.launch.py). It supports loading parameters from a YAML file or directly through launch arguments.
+    To run the `dynamixel_rdk_node`, use the provided [dynamixel_rdk.launch.py](dynamixel_rdk_ros/launch/dynamixel_rdk.launch.py). It supports loading parameters from a YAML file or directly through launch arguments.
 
     **Example launch command:**
     ```bash
     $ ros2 launch dynamixel_rdk_ros dynamixel_rdk.launch.py
     ```
+<br>
 
 2. **Set Lifecycle Node** <br>
     To set the node as a lifecycle node, you can use the `ros2 lifecycle set` command.
@@ -88,6 +96,7 @@ To use the packages in this repository, make sure you have the following install
 
 The node supports various parameters that can be configured via a YAML file or command line arguments. Here's a table of parameters:
 
+### Parameters in YAML file
 | Parameter Name             | Type             | Default Value                  | Description                                                                 |
 |----------------------------|------------------|---------------------------------|-----------------------------------------------------------------------------|
 | `device_port`              | `string`         | `/dev/ttyUSB0`                  | The serial port to which the device is connected.                           |
@@ -97,6 +106,20 @@ The node supports various parameters that can be configured via a YAML file or c
 | `dynamixels.max_position_limits` | `array of float` | `[3.14159]`  | List of maximum position limits for the motors in radians.                  |
 | `dynamixels.min_position_limits` | `array of float` | `[-3.14159]`| List of minimum position limits for the motors in radians.                  |
 
+### Example YAML file
+Example YAML file for three Dynamixel motors - [dynamixel.yaml](dynamixel_rdk_ros/config/dynamixel.yaml)
+```yaml
+# ROS2 Parameters
+/**:
+    ros__parameters:
+        device_port: "/dev/ttyUSB0"
+        baud_rate: 1000000
+        dynamixels:
+            ids: [1, 2, 3]
+            types: ["MX", "MX", "MX"]
+            max_position_limits: [3.14159, 3.14159, 3.14159]
+            min_position_limits: [-3.14159, -3.14159, -3.14159]
+```
 
 ## Contributing
 I welcome all contributions! Whether it's bug reports, feature suggestions, or pull requests, your input helps me to improve. If you're interested in contributing, please check out my contributing guidelines or submit an issue.
