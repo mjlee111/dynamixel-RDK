@@ -3,6 +3,8 @@
 Dynamixel ROS Development Kit for Sync Read and Write. 
 
 <div align="center">
+
+[English](README.md) | [한국어](docs/README_ko.md)
   
 [![Build and Test - Humble](https://github.com/mjlee111/dynamixel-RDK/actions/workflows/humble.yml/badge.svg?branch=master&event=push)](https://github.com/mjlee111/dynamixel-RDK/actions/workflows/humble.yml)
 
