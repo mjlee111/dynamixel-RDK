@@ -5,28 +5,28 @@
 ### `DynamixelStatusMsgs`
 Dynamixel 모터의 상태 메시지.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| header | std_msgs/Header | 메시지의 헤더. |
-| id | uint8 | Dynamixel 모터의 ID. |
-| torque_enabled | bool | 토크가 활성화되었는지 여부. |
-| error_status | uint8 | Dynamixel 모터의 오류 상태. |
-| present_position | float64 | Dynamixel 모터의 현재 위치. |
-| present_velocity | float64 | Dynamixel 모터의 현재 속도. |
+| Field | Type | Description | Unit |
+|-------|------|-------------|------|
+| header | std_msgs/Header | 메시지의 헤더. | - |
+| id | uint8 | Dynamixel 모터의 ID. | - |
+| torque_enabled | bool | 토크가 활성화되었는지 여부. | - |
+| error_status | uint8 | Dynamixel 모터의 오류 상태. | - |
+| present_position | float64 | Dynamixel 모터의 현재 위치. | rad |
+| present_velocity | float64 | Dynamixel 모터의 현재 속도. | rad/s |
 | present_acceleration | float64 | Dynamixel 모터의 현재 가속도. |
-| present_current | float64 | Dynamixel 모터의 현재 전류. |
-| present_voltage | float64 | Dynamixel 모터의 현재 전압. |
-| present_temperature | float64 | Dynamixel 모터의 현재 온도. |
+| present_current | float64 | Dynamixel 모터의 현재 전류. | mA |
+| present_voltage | float64 | Dynamixel 모터의 현재 전압. | V |
+| present_temperature | float64 | Dynamixel 모터의 현재 온도. | °C |
 
 ### `DynamixelMsgs`
 Dynamixel 모터의 제어 메시지.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| header | std_msgs/Header | 메시지의 헤더. |
-| goal_position | float64 | Dynamixel 모터의 목표 위치. |
-| profile_acceleration | float64 | Dynamixel 모터의 프로파일 가속도. |
-| profile_velocity | float64 | Dynamixel 모터의 프로파일 속도. |
+| Field | Type | Description | Unit |
+|-------|------|-------------|------|
+| header | std_msgs/Header | 메시지의 헤더. | - |
+| goal_position | float64 | Dynamixel 모터의 목표 위치. | rad |
+| profile_acceleration | float64 | Dynamixel 모터의 프로파일 가속도. | rad/s^2 |
+| profile_velocity | float64 | Dynamixel 모터의 프로파일 속도. | rad/s |
 
 ### `DynamixelBulkReadMsgs`
 Dynamixel 모터의 벌크 읽기 메시지.

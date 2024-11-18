@@ -5,28 +5,28 @@ This package contains the ROS2 messages for the Dynamixel RDK. Messages are adap
 ### `DynamixelStatusMsgs`
 Status message of the Dynamixel motor.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| header | std_msgs/Header | The header of the message. |
-| id | uint8 | The ID of the Dynamixel motor. |
-| torque_enabled | bool | Whether the torque is enabled. |
-| error_status | uint8 | The error status of the Dynamixel motor. |
-| present_position | float64 | The present position of the Dynamixel motor. |
-| present_velocity | float64 | The present velocity of the Dynamixel motor. |
-| present_acceleration | float64 | The present acceleration of the Dynamixel motor. |
-| present_current | float64 | The present current of the Dynamixel motor. |
-| present_voltage | float64 | The present voltage of the Dynamixel motor. |
-| present_temperature | float64 | The present temperature of the Dynamixel motor. |
+| Field | Type | Description | Unit |
+|-------|------|-------------|------|
+| header | std_msgs/Header | The header of the message. | - |
+| id | uint8 | The ID of the Dynamixel motor. | - |
+| torque_enabled | bool | Whether the torque is enabled. | - |
+| error_status | uint8 | The error status of the Dynamixel motor. | - |
+| present_position | float64 | The present position of the Dynamixel motor. | rad |
+| present_velocity | float64 | The present velocity of the Dynamixel motor. | rad/s |
+| present_acceleration | float64 | The present acceleration of the Dynamixel motor. | rad/s^2 |
+| present_current | float64 | The present current of the Dynamixel motor. | mA |
+| present_voltage | float64 | The present voltage of the Dynamixel motor. | V |
+| present_temperature | float64 | The present temperature of the Dynamixel motor. | °C |
 
 ### `DynamixelMsgs`
 Control message of the Dynamixel motor.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| header | std_msgs/Header | The header of the message. |
-| goal_position | float64 | The goal position of the Dynamixel motor. |
-| profile_acceleration | float64 | The profile acceleration of the Dynamixel motor. |
-| profile_velocity | float64 | The profile velocity of the Dynamixel motor. |
+| Field | Type | Description | Unit |
+|-------|------|-------------|------|
+| header | std_msgs/Header | The header of the message. | - |
+| goal_position | float64 | The goal position of the Dynamixel motor. | rad |
+| profile_acceleration | float64 | The profile acceleration of the Dynamixel motor. | rad/s^2 |
+| profile_velocity | float64 | The profile velocity of the Dynamixel motor. | rad/s |
 
 ### `DynamixelBulkReadMsgs`
 Bulk read message of the Dynamixel motor.
