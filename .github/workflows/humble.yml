@@ -17,5 +17,5 @@ jobs:
       - name: Building and testing on ROS2 Humble
         uses: ichiro-its/ros2-ci@v1.0.0
         with:
-          apt-packages: ros-humble-dynamixel-sdk libboost-all-dev
+          apt-packages: ros-humble-dynamixel-sdk libboost-all-dev qtbase5-dev qt5-qmake
           ros2-distro: humble
