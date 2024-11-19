@@ -207,6 +207,32 @@ void DynamixelRDKNode::dynamixel_status_publish()
   for (auto & dynamixel : dynamixel_ctrl_->dynamixels) {
     dynamixel_rdk_msgs::msg::DynamixelStatusMsgs status;
     status.header.stamp = get_clock()->now();
+    switch (dynamixel->type) {
+      case DynamixelType::MX:
+        status.header.frame_id = "MX";
+        break;
+      case DynamixelType::PH54_200:
+        status.header.frame_id = "PH54_200";
+        break;
+      case DynamixelType::PH54_100:
+        status.header.frame_id = "PH54_100";
+        break;
+      case DynamixelType::PH42_020:
+        status.header.frame_id = "PH42_020";
+        break;
+      case DynamixelType::PM54_060:
+        status.header.frame_id = "PM54_060";
+        break;
+      case DynamixelType::PM54_040:
+        status.header.frame_id = "PM54_040";
+        break;
+      case DynamixelType::PM42_010:
+        status.header.frame_id = "PM42_010";
+        break;
+      default:
+        RCLCPP_ERROR(get_logger(), "Invalid dynamixel type: %d", dynamixel->type);
+        continue;
+    }
     status.id = dynamixel->id;
     status.torque_enabled = dynamixel->torque_enabled;
     status.present_position = dynamixel->present_position;
@@ -215,6 +241,8 @@ void DynamixelRDKNode::dynamixel_status_publish()
     status.present_current = dynamixel->present_current;
     status.present_voltage = dynamixel->present_voltage;
     status.present_temperature = dynamixel->present_temperature;
+    status.min_max_position[0] = dynamixel->min_rad;
+    status.min_max_position[1] = dynamixel->max_rad;
     status_msg.status_msgs.push_back(status);
   }
   dynamixel_status_pub_->publish(status_msg);
