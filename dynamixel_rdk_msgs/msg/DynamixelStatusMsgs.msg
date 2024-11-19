@@ -14,3 +14,4 @@ float64 present_acceleration    # radians/s^2
 float64 present_current         # mA 
 float64 present_voltage         # V
 float64 present_temperature     # C
+float64[2] min_max_position    # radians
