@@ -17,6 +17,7 @@ Status message of the Dynamixel motor.
 | present_current | float64 | The present current of the Dynamixel motor. | mA |
 | present_voltage | float64 | The present voltage of the Dynamixel motor. | V |
 | present_temperature | float64 | The present temperature of the Dynamixel motor. | °C |
+| min_max_position | float64[2] | The minimum and maximum position of the Dynamixel motor. | rad |
 
 ### `DynamixelMsgs`
 Control message of the Dynamixel motor.

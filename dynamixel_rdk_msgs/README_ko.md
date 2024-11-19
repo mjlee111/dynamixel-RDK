@@ -17,6 +17,7 @@ Dynamixel 모터의 상태 메시지.
 | present_current | float64 | Dynamixel 모터의 현재 전류. | mA |
 | present_voltage | float64 | Dynamixel 모터의 현재 전압. | V |
 | present_temperature | float64 | Dynamixel 모터의 현재 온도. | °C |
+| min_max_position | float64[2] | Dynamixel 모터의 최소 및 최대 위치. | rad |
 
 ### `DynamixelMsgs`
 Dynamixel 모터의 제어 메시지.
