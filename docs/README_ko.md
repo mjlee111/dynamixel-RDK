@@ -19,6 +19,7 @@ Dynamixel Sync Read & Write를 위한 ROS Development Kit.
 - 라이프사이클 노드 시스템 지원
 - 파라미터를 위한 YAML 파일 지원
 - 상태 및 제어 메시지 지원 - [Dynamixel RDK Messages](../dynamixel_rdk_msgs/README_ko.md)
+- 간단한 GUI Dynamixel Controller - [Dynamixel RDK Manager](https://github.com/mjlee111/dynamixel_rdk_manager)
 
 ## 필수 요소
 해당 패키지를 사용하기 위해서 다음 요소가 설치되어 있어야 합니다.

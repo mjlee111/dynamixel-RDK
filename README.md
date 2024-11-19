@@ -19,6 +19,7 @@ This repository contains a ROS2 package for Dynamixel Sync Read and Write based 
 - Supports **Lifecycle Node** system
 - Supports **YAML** file for parameters
 - Status & Control messages support - [Dynamixel RDK Messages](dynamixel_rdk_msgs/README.md)
+- Simple GUI Dynamixel Controller - [Dynamixel RDK Manager](https://github.com/mjlee111/dynamixel_rdk_manager)
 
 ## Requirements
 To use the packages in this repository, make sure you have the following installed:
