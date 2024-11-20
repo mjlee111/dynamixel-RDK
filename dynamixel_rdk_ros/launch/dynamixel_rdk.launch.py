@@ -31,6 +31,8 @@ def generate_launch_description():
         package='dynamixel_rdk_ros', 
         executable='dynamixel_rdk_node', 
         name='dynamixel_rdk_node',  
+        output='screen',
+        emulate_tty=True,
         parameters=[config_dir]
     )
 
