@@ -42,7 +42,6 @@ DynamixelCtrl::DynamixelCtrl(
     std::cerr << "Failed to initialize indirect address. Exiting..." << std::endl;
     throw std::runtime_error("[DynamixelCtrl] Indirect address initialization failed");
   }
-  std::cout << "========================================================" << std::endl;
   controller_status = true;
 }
 
@@ -119,8 +118,9 @@ bool DynamixelCtrl::init_max_velocity_limit()
                   << std::endl;
         return false;
       } else {
-        std::cout << "Successfully got max velocity limit on Dynamixel ID: " << dynamixel->get_id()
-                  << " Max Velocity Limit: " << dynamixel->max_velocity_limit << std::endl;
+        // std::cout << "Successfully got max velocity limit on Dynamixel ID: " <<
+        // dynamixel->get_id()
+        //           << " Max Velocity Limit: " << dynamixel->max_velocity_limit << std::endl;
       }
     }
   }
@@ -150,8 +150,8 @@ bool DynamixelCtrl::init_single_max_velocity_limit(uint8_t id)
       std::cerr << "Failed to get max velocity limit on Dynamixel ID: " << id << std::endl;
       return false;
     } else {
-      std::cout << "Successfully got max velocity limit on Dynamixel ID: " << id
-                << " Max Velocity Limit: " << dynamixels[id]->max_velocity_limit << std::endl;
+      // std::cout << "Successfully got max velocity limit on Dynamixel ID: " << id
+      //           << " Max Velocity Limit: " << dynamixels[id]->max_velocity_limit << std::endl;
     }
   }
   return true;
@@ -167,8 +167,8 @@ bool DynamixelCtrl::init_indirect_address()
                 << std::endl;
       return false;
     } else {
-      std::cout << "Successfully set indirect address on Dynamixel ID: " << dynamixel->get_id()
-                << std::endl;
+      // std::cout << "Successfully set indirect address on Dynamixel ID: " << dynamixel->get_id()
+      //           << std::endl;
     }
   }
 
@@ -188,7 +188,7 @@ bool DynamixelCtrl::init_single_indirect_address(uint8_t id)
     std::cerr << "Failed to set indirect address on Dynamixel ID: " << id << std::endl;
     return false;
   } else {
-    std::cout << "Successfully set indirect address on Dynamixel ID: " << id << std::endl;
+    // std::cout << "Successfully set indirect address on Dynamixel ID: " << id << std::endl;
   }
 
   int dxl_comm_result = BulkWrite.txPacket();
@@ -208,7 +208,7 @@ bool DynamixelCtrl::set_torque(bool torque)
     bool dxl_addparam_result = dynamixel->set_torque(SyncWrite, torque);
     if (!dxl_addparam_result) {
       throw std::runtime_error(
-        "[DynamixelCtrl] Failed to add parameter to sync write on Dynamixel ID: " +
+        "Failed to add parameter to sync write on Dynamixel ID: " +
         std::to_string(dynamixel->get_id()));
     }
   }
@@ -216,7 +216,7 @@ bool DynamixelCtrl::set_torque(bool torque)
   int dxl_comm_result = SyncWrite.txPacket();
   if (dxl_comm_result == COMM_SUCCESS) {
   } else {
-    throw std::runtime_error("[DynamixelCtrl] Failed to set torque");
+    throw std::runtime_error("Failed to set torque");
   }
   return true;
 }
@@ -229,14 +229,13 @@ bool DynamixelCtrl::set_single_torque(uint8_t id, bool torque)
   bool dxl_addparam_result = dynamixels[id]->set_torque(SyncWrite, torque);
   if (!dxl_addparam_result) {
     throw std::runtime_error(
-      "[DynamixelCtrl] Failed to add parameter to sync write on Dynamixel ID: " +
-      std::to_string(id));
+      "Failed to add parameter to sync write on Dynamixel ID: " + std::to_string(id));
   }
 
   int dxl_comm_result = SyncWrite.txPacket();
   if (dxl_comm_result == COMM_SUCCESS) {
   } else {
-    throw std::runtime_error("[DynamixelCtrl] Failed to set torque");
+    throw std::runtime_error("Failed to set torque");
   }
   return true;
 }
@@ -250,7 +249,7 @@ bool DynamixelCtrl::read_dynamixel_status()
     bool dxl_addparam_result = SyncRead.addParam(dynamixel->get_id());
     if (!dxl_addparam_result) {
       throw std::runtime_error(
-        "[DynamixelCtrl] Failed to add parameter to sync read on Dynamixel ID: " +
+        "Failed to add parameter to sync read on Dynamixel ID: " +
         std::to_string(dynamixel->get_id()));
     }
   }
@@ -258,15 +257,23 @@ bool DynamixelCtrl::read_dynamixel_status()
   int dxl_comm_result = SyncRead.txRxPacket();
   if (dxl_comm_result == COMM_SUCCESS) {
     for (auto & dynamixel : dynamixels) {
-      bool dxl_get_dynamixel_status_result = dynamixel->get_dynamixel_status(SyncRead);
-      if (!dxl_get_dynamixel_status_result) {
+      if (
+        !dynamixel->get_dynamixel_status(SyncRead) ||
+        dynamixel->get_reboot_sequence() != DynamixelRebootSequence::STABLE) {
+        if (dynamixel->get_reboot_sequence() == DynamixelRebootSequence::STABLE) {
+          dynamixel->reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
+        }
         throw std::runtime_error(
-          "[DynamixelCtrl] Failed to get dynamixel status on Dynamixel ID: " +
-          std::to_string(dynamixel->get_id()));
+          "Failed to get dynamixel status on ID: " + std::to_string(dynamixel->get_id()));
       }
     }
   } else {
-    throw std::runtime_error("[DynamixelCtrl] Failed to get dynamixel status");
+    for (auto & dynamixel : dynamixels) {
+      dynamixel->reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
+    }
+    throw std::runtime_error(
+      "Failed to get dynamixel status. Error Code: " + std::to_string(dxl_comm_result) +
+      " Check your connection.");
   }
   return true;
 }
@@ -282,7 +289,7 @@ void DynamixelCtrl::sync_write(
     bool dxl_addparam_result = dynamixels[i]->set_control_data_param(SyncWrite);
     if (!dxl_addparam_result) {
       throw std::runtime_error(
-        "[DynamixelCtrl] Failed to add parameter to sync write on Dynamixel ID: " +
+        "Failed to add parameter to sync write on Dynamixel ID: " +
         std::to_string(dynamixels[i]->get_id()));
     }
   }
@@ -290,8 +297,33 @@ void DynamixelCtrl::sync_write(
   int dxl_comm_result = SyncWrite.txPacket();
   if (dxl_comm_result == COMM_SUCCESS) {
   } else {
-    throw std::runtime_error("[DynamixelCtrl] Failed to set goal position");
+    throw std::runtime_error("Failed to set goal position");
   }
+}
+
+void DynamixelCtrl::auto_reboot()
+{
+  for (auto & dynamixel : dynamixels) {
+    try {
+      if (dynamixel->get_reboot_sequence() != DynamixelRebootSequence::STABLE) {
+        dynamixel->reboot_sequence(packetHandler_, portHandler_);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      }
+    } catch (const std::exception & e) {
+      last_error_ = e.what();
+      continue;
+    }
+  }
+}
+
+std::string DynamixelCtrl::get_reboot_sequence_str() const
+{
+  std::string sequence;
+  for (const auto & dynamixel : dynamixels) {
+    sequence += "ID " + std::to_string(dynamixel->get_id()) + ": " +
+                dynamixel->get_reboot_sequence_str() + ", ";
+  }
+  return sequence;
 }
 
 bool DynamixelCtrl::status()

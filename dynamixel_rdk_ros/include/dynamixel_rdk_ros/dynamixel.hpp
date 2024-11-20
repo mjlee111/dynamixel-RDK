@@ -71,6 +71,8 @@ enum AddressNumber {
   PRESENT_TEMPERATURE = 27     // 1 byte
 };
 
+enum DynamixelRebootSequence { STABLE, REBOOT_START, REBOOT_PING, INITIALIZE, SET_TORQUE };
+
 // Dynamixel
 class Dynamixel
 {
@@ -89,12 +91,14 @@ public:
   // Dynamixel Status Data
   bool torque_enabled;
   bool is_moving;
-  uint16_t error_status;
+  uint8_t error_status;
   double present_position;     // rad
   double present_velocity;     // rad/s
   double present_current;      // mA
   double present_voltage;      // V
   double present_temperature;  // C
+
+  DynamixelRebootSequence reboot_seq_ = DynamixelRebootSequence::STABLE;
 
   // Dynamixel Control Data
   double goal_position;
@@ -114,6 +118,8 @@ public:
   double get_present_voltage() { return present_voltage; }
   double get_present_temperature() { return present_temperature; }
 
+  DynamixelRebootSequence get_reboot_sequence() { return reboot_seq_; }
+
   // Dynamixel Control Functions
 public:
   Dynamixel(DynamixelType type, uint8_t id, double min_rad = -M_PI, double max_rad = M_PI);
@@ -123,8 +129,12 @@ public:
   bool get_max_velocity_limit(dynamixel::GroupSyncRead & SyncRead);
 
   bool set_indirect_address(dynamixel::GroupBulkWrite & BulkWrite);
+  bool set_single_indirect_address(
+    dynamixel::PacketHandler * packet_handler, dynamixel::PortHandler * port_handler);
 
   bool set_torque(dynamixel::GroupSyncWrite & SyncWrite, bool torque);
+  bool set_single_torque(
+    dynamixel::PacketHandler * packet_handler, dynamixel::PortHandler * port_handler, bool torque);
 
   bool set_position(double position);
   bool set_velocity(double velocity);
@@ -134,6 +144,12 @@ public:
   bool set_control_data_param(dynamixel::GroupSyncWrite & SyncWrite);
 
   static uint16_t address(const uint16_t address);
+
+  void reboot_sequence(
+    dynamixel::PacketHandler * packet_handler, dynamixel::PortHandler * port_handler);
+
+  std::string get_reboot_sequence_str() const;
+  std::string sequence_to_string(DynamixelRebootSequence seq) const;
 
 private:
   void divide_byte(std::vector<uint8_t> & data, int address, int byte_size);

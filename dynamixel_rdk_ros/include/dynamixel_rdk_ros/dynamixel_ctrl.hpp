@@ -26,6 +26,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <thread>
 
 namespace dynamixel_rdk_ros
 {
@@ -48,6 +49,11 @@ public:  // Public Functions
   void sync_write(
     std::vector<double> position, std::vector<double> velocity, std::vector<double> acceleration);
 
+  void auto_reboot();
+
+  std::string get_reboot_sequence_str() const;
+  std::string get_last_error() const { return last_error_; }
+
 public:  // Public Variables
   bool controller_status;
 
@@ -69,6 +75,8 @@ private:  // Private Variables
   std::vector<double> min_position_limit;
   dynamixel::PortHandler * portHandler_;
   dynamixel::PacketHandler * packetHandler_;
+
+  std::string last_error_;
 };
 }  // namespace dynamixel_rdk_ros
 

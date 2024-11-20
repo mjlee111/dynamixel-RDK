@@ -70,27 +70,35 @@ bool Dynamixel::get_max_velocity_limit(dynamixel::GroupSyncRead & SyncRead)
 bool Dynamixel::get_dynamixel_status(dynamixel::GroupSyncRead & SyncRead)
 {
   if (!SyncRead.isAvailable(id, address(TORQUE_ENABLE), 1)) {
+    reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
     return false;
   }
   if (!SyncRead.isAvailable(id, address(MOVING), 1)) {
+    reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
     return false;
   }
   if (!SyncRead.isAvailable(id, address(HARDWARE_ERROR_STATUS), 1)) {
+    reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
     return false;
   }
   if (!SyncRead.isAvailable(id, address(PRESENT_POSITION), 4)) {
+    reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
     return false;
   }
   if (!SyncRead.isAvailable(id, address(PRESENT_VELOCITY), 4)) {
+    reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
     return false;
   }
   if (!SyncRead.isAvailable(id, address(PRESENT_CURRENT), 2)) {
+    reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
     return false;
   }
   if (!SyncRead.isAvailable(id, address(PRESENT_INPUT_VOLTAGE), 2)) {
+    reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
     return false;
   }
   if (!SyncRead.isAvailable(id, address(PRESENT_TEMPERATURE), 1)) {
+    reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
     return false;
   }
 
@@ -102,6 +110,14 @@ bool Dynamixel::get_dynamixel_status(dynamixel::GroupSyncRead & SyncRead)
   present_current = -(int16_t)SyncRead.getData(id, address(PRESENT_CURRENT), 2) / dxl_current_ratio;
   present_voltage = SyncRead.getData(id, address(PRESENT_INPUT_VOLTAGE), 2) * 0.1;
   present_temperature = (int16_t)SyncRead.getData(id, address(PRESENT_TEMPERATURE), 1);
+
+  int error_status_int = static_cast<int>(error_status);
+  if (error_status_int != 0 && reboot_seq_ == DynamixelRebootSequence::STABLE) {
+    std::cerr << "[Dynamixel] Got error on ID: " << static_cast<int>(id)
+              << " Error status: " << error_status_int << std::endl;
+    reboot_seq_ = DynamixelRebootSequence::REBOOT_START;
+    return false;
+  }
   return true;
 }
 
@@ -111,10 +127,48 @@ bool Dynamixel::set_indirect_address(dynamixel::GroupBulkWrite & BulkWrite)
     id, dynamixel_indirect_address, dynamixel_addresses.size(), dynamixel_addresses.data());
 }
 
+bool Dynamixel::set_single_indirect_address(
+  dynamixel::PacketHandler * packet_handler, dynamixel::PortHandler * port_handler)
+{
+  uint8_t dxl_initialize_err;
+  int dxl_initialize_result = packet_handler->writeTxRx(
+    port_handler, id, dynamixel_indirect_address, dynamixel_addresses.size(),
+    dynamixel_addresses.data(), &dxl_initialize_err);
+
+  if (dxl_initialize_result != COMM_SUCCESS) {
+    std::cerr << "[Dynamixel] Failed to set indirect address. Error id: " << static_cast<int>(id)
+              << std::endl;
+    return false;
+  }
+
+  uint8_t dxl_max_velocity_err;
+  uint32_t dxl_max_velocity_data;
+  int dxl_max_velocity_result = packet_handler->read4ByteTxRx(
+    port_handler, id, EEPROM::VELOCITY_LIMIT.first, &dxl_max_velocity_data, &dxl_max_velocity_err);
+  if (dxl_max_velocity_result != COMM_SUCCESS) {
+    std::cerr << "[Dynamixel] Failed to get max velocity limit. Error id: " << static_cast<int>(id)
+              << std::endl;
+    return false;
+  }
+  max_velocity_limit = dxl_max_velocity_data * dxl_rps_ratio;
+
+  return true;
+}
+
 bool Dynamixel::set_torque(dynamixel::GroupSyncWrite & SyncWrite, bool torque)
 {
-  uint8_t torque_data[1] = {torque ? 1 : 0};
+  uint8_t torque_data[1] = {static_cast<uint8_t>(torque ? 1U : 0U)};
   return SyncWrite.addParam(id, torque_data);
+}
+
+bool Dynamixel::set_single_torque(
+  dynamixel::PacketHandler * packet_handler, dynamixel::PortHandler * port_handler, bool torque)
+{
+  uint8_t dxl_torque_err;
+  uint8_t torque_data[1] = {static_cast<uint8_t>(torque ? 1U : 0U)};
+  int dxl_torque_result = packet_handler->writeTxRx(
+    port_handler, id, address(TORQUE_ENABLE), 1, torque_data, &dxl_torque_err);
+  return dxl_torque_result == COMM_SUCCESS;
 }
 
 bool Dynamixel::set_position(double position)
@@ -175,6 +229,74 @@ bool Dynamixel::set_control_data_param(dynamixel::GroupSyncWrite & SyncWrite)
   return SyncWrite.addParam(id, control_data_vector.data());
 }
 
+void Dynamixel::reboot_sequence(
+  dynamixel::PacketHandler * packet_handler, dynamixel::PortHandler * port_handler)
+{
+  uint8_t dxl_reboot_err;
+  int dxl_reboot_result;
+
+  std::cout << "Starting reboot sequence for ID: " << static_cast<int>(id)
+            << " Reboot seq: " << static_cast<int>(reboot_seq_) << std::endl;
+
+  try {
+    switch (reboot_seq_) {
+      case DynamixelRebootSequence::STABLE:
+        break;
+      case DynamixelRebootSequence::REBOOT_START:
+        dxl_reboot_result = packet_handler->reboot(port_handler, id, &dxl_reboot_err);
+        if (dxl_reboot_result != COMM_SUCCESS) {
+          std::cout << "[Dynamixel] Reboot start failed for ID " << static_cast<int>(id)
+                    << ", retrying..." << std::endl;
+          reboot_seq_ = DynamixelRebootSequence::REBOOT_PING;
+        } else {
+          // std::cout << "[Dynamixel] Reboot start success for ID " << static_cast<int>(id)
+          //           << std::endl;
+          reboot_seq_ = DynamixelRebootSequence::REBOOT_PING;
+        }
+        break;
+      case DynamixelRebootSequence::REBOOT_PING:
+        dxl_reboot_result = packet_handler->ping(port_handler, id, &dxl_reboot_err);
+        if (dxl_reboot_result != COMM_SUCCESS) {
+          std::cout << "[Dynamixel] Ping failed for ID " << static_cast<int>(id) << ", retrying..."
+                    << std::endl;
+          reboot_seq_ = DynamixelRebootSequence::INITIALIZE;
+        } else {
+          // std::cout << "[Dynamixel] Ping success for ID " << static_cast<int>(id) << std::endl;
+          reboot_seq_ = DynamixelRebootSequence::INITIALIZE;
+        }
+        break;
+      case DynamixelRebootSequence::INITIALIZE:
+        if (!set_single_indirect_address(packet_handler, port_handler)) {
+          std::cout << "[Dynamixel] Initialize failed for ID " << static_cast<int>(id)
+                    << ", retrying..." << std::endl;
+          reboot_seq_ = DynamixelRebootSequence::SET_TORQUE;
+        } else {
+          // std::cout << "[Dynamixel] Initialize success for ID " << static_cast<int>(id)
+          //           << std::endl;
+          reboot_seq_ = DynamixelRebootSequence::SET_TORQUE;
+        }
+        break;
+      case DynamixelRebootSequence::SET_TORQUE:
+        if (!set_single_torque(packet_handler, port_handler, true)) {
+          std::cout << "[Dynamixel] Set torque failed for ID " << static_cast<int>(id)
+                    << ", retrying..." << std::endl;
+        } else {
+          reboot_seq_ = DynamixelRebootSequence::STABLE;
+          std::cout << "[Dynamixel] Reboot sequence completed for ID " << static_cast<int>(id)
+                    << std::endl;
+        }
+        break;
+      default:
+        std::cerr << "[Dynamixel] Invalid reboot sequence for ID " << static_cast<int>(id)
+                  << std::endl;
+        break;
+    }
+  } catch (const std::exception & e) {
+    std::cerr << "[Dynamixel] Reboot sequence error for ID " << static_cast<int>(id) << ": "
+              << e.what() << std::endl;
+  }
+}
+
 void Dynamixel::divide_byte(std::vector<uint8_t> & data, int address, int byte_size)
 {
   switch (byte_size) {
@@ -228,6 +350,8 @@ double Dynamixel::to_rad(int32_t position)
       return min_max_rad(-PRO_PM54_RESOLUTION, PRO_PM54_RESOLUTION, position);
     case DynamixelType::PM42_010:
       return min_max_rad(-PRO_PM42_RESOLUTION, PRO_PM42_RESOLUTION, position);
+    default:
+      return 0.0;
   }
 }
 
@@ -253,6 +377,31 @@ int32_t Dynamixel::to_position(double rad)
       return min_max_position(-PRO_PM54_RESOLUTION, PRO_PM54_RESOLUTION, rad);
     case DynamixelType::PM42_010:
       return min_max_position(-PRO_PM42_RESOLUTION, PRO_PM42_RESOLUTION, rad);
+    default:
+      return 0;
+  }
+}
+
+std::string Dynamixel::get_reboot_sequence_str() const
+{
+  return sequence_to_string(reboot_seq_);
+}
+
+std::string Dynamixel::sequence_to_string(DynamixelRebootSequence seq) const
+{
+  switch (seq) {
+    case DynamixelRebootSequence::STABLE:
+      return "STABLE";
+    case DynamixelRebootSequence::REBOOT_START:
+      return "REBOOT_START";
+    case DynamixelRebootSequence::REBOOT_PING:
+      return "REBOOT_PING";
+    case DynamixelRebootSequence::INITIALIZE:
+      return "INITIALIZE";
+    case DynamixelRebootSequence::SET_TORQUE:
+      return "SET_TORQUE";
+    default:
+      return "UNKNOWN";
   }
 }
 

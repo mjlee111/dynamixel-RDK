@@ -199,7 +199,15 @@ void DynamixelRDKNode::dynamixel_status_publish()
   try {
     dynamixel_ctrl_->read_dynamixel_status();
   } catch (const std::exception & e) {
-    RCLCPP_ERROR(get_logger(), "Failed to read dynamixel status: %s", e.what());
+    RCLCPP_ERROR(get_logger(), "Rebooting dynamixels due to: %s", e.what());
+    try {
+      dynamixel_ctrl_->auto_reboot();
+    } catch (const std::exception & e) {
+      RCLCPP_ERROR(
+        get_logger(), "Reboot failed - ID: %s, Error: %s. Retrying in next cycle...", e.what(),
+        dynamixel_ctrl_->get_last_error().c_str());
+      return;
+    }
   }
 
   dynamixel_rdk_msgs::msg::DynamixelBulkReadMsgs status_msg;
@@ -235,6 +243,7 @@ void DynamixelRDKNode::dynamixel_status_publish()
     }
     status.id = dynamixel->id;
     status.torque_enabled = dynamixel->torque_enabled;
+    status.error_status = dynamixel->error_status;
     status.present_position = dynamixel->present_position;
     status.present_velocity = dynamixel->present_velocity;
     status.present_acceleration = dynamixel->profile_acceleration;
