@@ -71,6 +71,9 @@ private:  // Private Variables
 
   std::string device_port_;
   int baud_rate_;
+  std::string control_topic_;
+  std::string status_topic_;
+
   std::shared_ptr<DynamixelCtrl> dynamixel_ctrl_;
 
   std::vector<uint8_t> dynamixel_ids_;

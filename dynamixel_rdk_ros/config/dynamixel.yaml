@@ -3,10 +3,10 @@
     ros__parameters:
         device_port: "/dev/ttyUSB0"
         baud_rate: 1000000
+        control_topic: "/dynamixel_control"
+        status_topic: "/dynamixel_status"
         dynamixels:
             ids: [1, 2, 3]
             types: ["MX", "MX", "MX"]
             max_position_limits: [3.14159, 3.14159, 3.14159]
             min_position_limits: [-3.14159, -3.14159, -3.14159]
-    
-

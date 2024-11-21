@@ -40,10 +40,10 @@ DynamixelRDKNode::on_configure(const rclcpp_lifecycle::State &)
   get_parameters();
 
   dynamixel_status_pub_ =
-    create_publisher<dynamixel_rdk_msgs::msg::DynamixelBulkReadMsgs>("dynamixel_status", 1);
+    create_publisher<dynamixel_rdk_msgs::msg::DynamixelBulkReadMsgs>(status_topic_.c_str(), 1);
 
   dynamixel_control_sub_ = create_subscription<dynamixel_rdk_msgs::msg::DynamixelControlMsgs>(
-    "dynamixel_control", 10,
+    control_topic_.c_str(), 10,
     std::bind(&DynamixelRDKNode::dynamixel_control_callback, this, std::placeholders::_1));
 
   try {
@@ -132,6 +132,8 @@ void DynamixelRDKNode::init_parameters()
   // ROS2 Parameters
   declare_parameter("device_port", rclcpp::ParameterValue("/dev/ttyUSB0"));
   declare_parameter("baud_rate", rclcpp::ParameterValue(1000000));
+  declare_parameter("control_topic", rclcpp::ParameterValue("/dynamixel_control"));
+  declare_parameter("status_topic", rclcpp::ParameterValue("/dynamixel_status"));
 
   declare_parameter("dynamixels.ids", std::vector<int64_t>{1});
   declare_parameter("dynamixels.types", std::vector<std::string>{"MX"});
@@ -143,6 +145,11 @@ void DynamixelRDKNode::get_parameters()
 {
   device_port_ = get_parameter("device_port").as_string();
   baud_rate_ = get_parameter("baud_rate").as_int();
+  control_topic_ = get_parameter("control_topic").as_string();
+  status_topic_ = get_parameter("status_topic").as_string();
+
+  RCLCPP_INFO(get_logger(), "Control topic: %s", control_topic_.c_str());
+  RCLCPP_INFO(get_logger(), "Status topic: %s", status_topic_.c_str());
 
   std::vector<int64_t> dynamixel_ids = get_parameter("dynamixels.ids").as_integer_array();
   for (auto & id : dynamixel_ids) {
