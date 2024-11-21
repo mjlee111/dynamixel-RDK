@@ -104,6 +104,8 @@ The node supports various parameters that can be configured via a YAML file or c
 |----------------------------|------------------|---------------------------------|-----------------------------------------------------------------------------|
 | `device_port`              | `string`         | `/dev/ttyUSB0`                  | The serial port to which the device is connected.                           |
 | `baud_rate`                | `int`            | `1000000`                       | The baud rate for serial communication.                                     |
+| `control_topic`            | `string`         | `/dynamixel_control`             | The topic name for control messages.                                        |
+| `status_topic`             | `string`         | `/dynamixel_status`              | The topic name for status messages.                                         |
 | `dynamixels.ids`           | `array of int`   | `[1]`                     | List of Dynamixel motor IDs to be used.                                     |
 | `dynamixels.types`         | `array of string`| `["MX"]`            | List of types of Dynamixel motors (e.g., "MX" for MX series).               |
 | `dynamixels.max_position_limits` | `array of float` | `[3.14159]`  | List of maximum position limits for the motors in radians.                  |

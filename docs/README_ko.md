@@ -104,6 +104,8 @@ Dynamixel Sync Read & Write를 위한 ROS Development Kit.
 |----------------------------|------------------|---------------------------------|-----------------------------------------------------------------------------|
 | `device_port`              | `string`         | `/dev/ttyUSB0`                  | 장치가 연결된 시리얼 포트.                           |
 | `baud_rate`                | `int`            | `1000000`                       | 시리얼 통신 속도.                                     |
+| `control_topic`            | `string`         | `/dynamixel_control`             | 제어 메시지 토픽 이름.                                        |
+| `status_topic`             | `string`         | `/dynamixel_status`              | 상태 메시지 토픽 이름.                                         |
 | `dynamixels.ids`           | `array of int`   | `[1]`                     | 사용할 Dynamixel 모터 ID 목록.                                     |
 | `dynamixels.types`         | `array of string`| `["MX"]`            | Dynamixel 모터 유형 목록 (예: "MX" for MX series).               |
 | `dynamixels.max_position_limits` | `array of float` | `[3.14159]`  | 모터의 최대 위치 제한 목록.                  |
