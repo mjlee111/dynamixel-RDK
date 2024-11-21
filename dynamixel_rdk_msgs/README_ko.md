@@ -36,7 +36,7 @@ Dynamixel 모터의 벌크 읽기 메시지.
 |-------|------|-------------|
 | status_msgs | DynamixelStatusMsgs[] | Dynamixel 모터의 상태 메시지. |
 
-### `DynamixelBulkWriteMsgs`
+### `DynamixelControlMsgs`
 Dynamixel 모터의 벌크 쓰기 메시지.
 
 | Field | Type | Description |
@@ -46,5 +46,5 @@ Dynamixel 모터의 벌크 쓰기 메시지.
 ## 비고
 - 이 패키지는 [Dynamixel SDK](https://github.com/ROBOTIS-GIT/DynamixelSDK)를 기반으로 하며, 메시지는 SDK에서 영감을 받았습니다.
 - Dynamixel 모터의 오류 상태는 [Dynamixel Protocol 2.0 상태 패킷](https://emanual.robotis.com/docs/en/dxl/protocol2/#status-packet)에서 영감을 받았습니다.
-- `DynamixelBulkWriteMsgs` 및 `DynamixelMsgs`는 **id**를 포함하지 않습니다. `DynamixelMsgs`를 순차적으로 `DynamixelBulkWriteMsgs`에 추가해야 합니다.
+- `DynamixelControlMsgs` 및 `DynamixelMsgs`는 **id**를 포함하지 않습니다. `DynamixelMsgs`를 순차적으로 `DynamixelControlMsgs`에 추가해야 합니다.
 

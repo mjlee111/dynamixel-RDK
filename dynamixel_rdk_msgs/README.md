@@ -36,7 +36,7 @@ Bulk read message of the Dynamixel motor.
 |-------|------|-------------|
 | status_msgs | DynamixelStatusMsgs[] | The status messages of the Dynamixel motors. |
 
-### `DynamixelBulkWriteMsgs`
+### `DynamixelControlMsgs`
 Bulk write message of the Dynamixel motor.
 
 | Field | Type | Description |
@@ -46,5 +46,5 @@ Bulk write message of the Dynamixel motor.
 ## Disclaimer
 - This package is based on the [Dynamixel SDK](https://github.com/ROBOTIS-GIT/DynamixelSDK), and the messages are adapted from the SDK.
 - The error status of the Dynamixel motor is based on the [Dynamixel Protocol 2.0 status packet](https://emanual.robotis.com/docs/en/dxl/protocol2/#status-packet).
-- `DynamixelBulkWriteMsgs` and `DynamixelMsgs` does not contains **id**. You need to push `DynamixelMsgs` to the `DynamixelBulkWriteMsgs` sequentially.
+- `DynamixelControlMsgs` and `DynamixelMsgs` does not contains **id**. You need to push `DynamixelMsgs` to the `DynamixelControlMsgs` sequentially.
 
