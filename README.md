@@ -124,6 +124,11 @@ Example YAML file for three Dynamixel motors - [dynamixel.yaml](dynamixel_rdk_ro
             min_position_limits: [-3.14159, -3.14159, -3.14159]
 ```
 
+### Dynamixel Position to Radian Conversion
+`dynamixel_rdk_ros` uses [radian] as the unit of position. Here is the conversion explanation image.
+
+![dynamixel_position_to_radian](docs/images/radian.png)
+
 ## Contributing
 I welcome all contributions! Whether it's bug reports, feature suggestions, or pull requests, your input helps me to improve. If you're interested in contributing, please check out my contributing guidelines or submit an issue.
 

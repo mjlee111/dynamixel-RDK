@@ -124,6 +124,11 @@ Dynamixel Sync Read & Write를 위한 ROS Development Kit.
             min_position_limits: [-3.14159, -3.14159, -3.14159]
 ```
 
+### Dynamixel Position to Radian Conversion
+`dynamixel_rdk_ros`는 [radian]을 위치 단위로 사용합니다. 변환 설명 이미지는 다음과 같습니다.
+
+![dynamixel_position_to_radian](images/radian.png)
+
 ## 기여
 모든 기여를 환영합니다! 버그 보고, 기능 제안 또는 풀 리퀘스트는 모두 피드백을 도와줍니다. 기여하고 싶다면 기여 가이드라인을 확인하거나 이슈를 제출하세요.
 
