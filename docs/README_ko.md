@@ -1,6 +1,6 @@
 # dynamixel-RDK
 
-Dynamixel Sync Read & Write를 위한 ROS Development Kit.
+Dynamixel의 Sync Read & Write를 사용한 위치제어를 위한 ROS Development Kit.
 
 <div align="center">
 
